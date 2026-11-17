@@ -4,7 +4,7 @@ down_message = "Sorry, I am currently down for maintenance. Please check back so
 timeout = 60 # Seconds to wait for the assistant to respond before raising a timeout error
 require_auth = false
 robo_check = false
-assistant_llm = "gpt-5.6-terra"
+assistant_llm = "gpt-5.6-luna"
 assistant_reasoning_effort = "medium"
 max_cost_per_user_request = 2.0 # In USD
 max_tokens_per_assistant_response = 4096
@@ -21,9 +21,9 @@ agents = [
 only_allow_dictionary_models = false
 
 [llm_proxy.model_dictionary]
-"best" = "gpt-5.6-terra"
-"fast" = "gpt-5.6-luna"
-"fastest" = "gpt-6-luna"
+"best" = "gpt-5.6-luna"
+"fast" = "gpt-6-luna"
+"fastest" = "gpt-oss-120b"
 "best-cheap" = "gpt-oss-120b"
 "fast-cheap" = "gpt-oss-20b"
 "gpt-4.1-unfiltered" = "gpt-4.1-unfiltered"
