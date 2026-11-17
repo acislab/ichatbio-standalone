@@ -9,7 +9,13 @@ Requirements:
 * [git](https://git-scm.com/install/)
 * [A GitHub account with an SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux)
 
-This accesses private GitHub repos, so you'll need an SSH key and a running SSH agent. You can use `keychain` to start the agent:
+First clone this repository:
+
+```bash
+git clone https://github.com/acislab/ichatbio-standalone.git && cd ichatbio-standalone
+```
+
+The iChatBio backend and frontend are private GitHub repos, so you'll need an SSH key and a running SSH agent to access them. You can use `keychain` to start the SSH agent:
 
 ```
 sudo apt update && sudo apt install keychain
