@@ -87,7 +87,7 @@ services:
         required: false
     configs:
       - source: backend_config
-        target: /home/app/backend.toml
+        target: /app/backend.toml
     env_file:
       - path: .env.defaults
         required: true
