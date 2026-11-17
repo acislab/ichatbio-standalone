@@ -1,0 +1,113 @@
+x-agent-base: &agent-base
+  extra_hosts:
+    - "localhost:host-gateway" # Allow agents to resolve localhost URLs. This allows composed agents to work alongside local dev agents, and allows composed agents to access localhost blobstore URLs. Don't use this for production servers.
+  restart: unless-stopped
+  env_file:
+    - path: .env.defaults
+      required: true
+    - path: agents.env
+      required: false
+  environment:
+    LLM: ${EXPERT_AGENTS_LLM:-${LLM:-best}}
+    USE_LLM_PROXY: ${USE_LLM_PROXY:-true}
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-${LLM_API_KEY:-}}
+    OPENAI_BASE_URL: ${OPENAI_BASE_URL:-${LLM_BASE_URL:-}}
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://0.0.0.0:9999/.well-known/agent-card.json" ]
+    start_period: 10s
+    start_interval: 1s
+
+services:
+  data_handler:
+    <<: *agent-base
+    build: https://github.com/acislab/ichatbio-data-handler-agent.git
+    ports: ["9090:9999"]
+    profiles: ["agents", "data_handler"]
+
+  map_maker:
+    <<: *agent-base
+    build: https://github.com/acislab/ichatbio-map-agent.git
+    ports: ["9091:9999"]
+    profiles: ["agents", "map_maker"]
+
+  idigbio:
+    <<: *agent-base
+    build: https://github.com/acislab/ichatbio-idigbio-agent.git
+    ports: ["9092:9999"]
+    profiles: ["agents", "idigbio"]
+
+  gbif:
+    <<: *agent-base
+    build: https://github.com/acislab/ichatbio-gbif-agent.git
+    ports: ["9093:9999"]
+    profiles: ["agents", "gbif"]
+
+  clamav:
+    image: clamav/clamav:latest
+    restart: unless-stopped
+    expose: ["3310"]
+    profiles: ["clamav"]
+
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    expose: ["9000", "9001"]
+    ports: ["9000:9000", "9001:9001"]
+    volumes:
+      - ${MINIO_DATA_DIR:-/storage/idigbio-chat/minio}:/data
+    profiles: ["minio"]
+  
+  backend:
+    build: git@github.com:acislab/ichatbio-backend.git
+    ports: ["8989:8989"]
+    profiles: ["backend"]
+    extra_hosts: ["localhost:host-gateway"]
+    depends_on:
+      data_handler:
+        condition: service_started
+        required: false
+      map_maker:
+        condition: service_started
+        required: false
+      idigbio:
+        condition: service_started
+        required: false
+      gbif:
+        condition: service_started
+        required: false
+      clamav:
+        condition: service_started
+        required: false
+      minio:
+        condition: service_started
+        required: false
+    configs:
+      - source: backend_config
+        target: /home/app/backend.toml
+    env_file:
+      - path: .env.defaults
+        required: true
+      - path: backend.env
+        required: false
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-${LLM_API_KEY:?}}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-${LLM_BASE_URL:?}}
+
+  frontend:
+    build: git@github.com:acislab/icb-frontend.git
+    ports: ["8080:80"]
+    profiles: ["frontend"]
+    env_file:
+      - path: .env.defaults
+        required: true
+      - path: ./frontend.env
+        required: false
+
+configs:
+  backend_config:
+    file: ./backend.toml
+
