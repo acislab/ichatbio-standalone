@@ -24,7 +24,11 @@ eval $(keychain --eval --agents ssh id_rsa)
 
 Replace `id_rsa` if your key has a different name (e.g. `id_ed25519` in the `~/.ssh/` directory).
 
-You can add that `eval ...` line to your `~/.bashrc` or `~/.zshrc` (etc.) so you don't have to repeat this step every time you open a new terminal.
+You can add that `eval ...` line to your `~/.bashrc` or `~/.zshrc` (etc.) so you don't have to repeat this step every time you open a new terminal:
+
+```bash
+echo 'eval $(keychain --eval --agents ssh id_rsa)' >> ~/.bashrc
+```
 
 ## Run
 
