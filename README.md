@@ -42,7 +42,7 @@ Then run everything:
 docker compose up --build
 ```
 
-By default, this will run the backend, frontend, and a handful of agents. This is defined by `COMPOSE_PROFILES` in [.env.defaults](.env.defaults). You can use `.env` to override any default variables without upsetting git.
+By default, this will run the backend, frontend, and a handful of agents. This is configured by `COMPOSE_PROFILES` in [.env.defaults](.env.defaults). You can use `.env` to override any default variables without upsetting git.
 
 All services will read `.env.defaults` and `.env`, but if needed, you can set per-service environments by creating the following files:
 * `backend.env`
