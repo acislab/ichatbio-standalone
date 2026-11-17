@@ -1,6 +1,6 @@
-# Quickstart
-
 Uses `docker compose` to deploy a local iChatBio instance.
+
+# Quickstart
 
 ## Requirements
 
